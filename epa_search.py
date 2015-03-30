@@ -9,8 +9,9 @@ class App(wx.App):
 
     def __init__(self, redirect=True, filename=None):
         wx.App.__init__(self, redirect, filename)
+        self.main_m()
 
-    def OnInit(self):
+    def main_m(self):
         dlg = wx.SingleChoiceDialog(None,
                 'What would you like to do?', 'EPA Analyzer',
                ['Construct A Query', 'Visualize Data'])
@@ -19,6 +20,7 @@ class App(wx.App):
             response = dlg.GetStringSelection()
         else:
             dlg.Destroy()
+            return None
 
         if response == 'Construct A Query':
             self.query()
@@ -40,12 +42,15 @@ class App(wx.App):
             response = dlg.GetStringSelection()
         else:
             dlg.Destroy()
+            self.main_m()
+            return None
+
 
         if response == 'City Comparison':
             cur.execute('select distinct FAC_STATE from frs_fac order by fac_state')
             info = cur.fetchall()
             info = ["%s" % x for x in info]
-            dlg = wx.SingleChoiceDialog(None,'Select Scope', 'Query Construction',
+            dlg = wx.SingleChoiceDialog(None,'Select State', 'Query Construction',
                                     info)
             if dlg.ShowModal() == wx.ID_OK:
                 response = dlg.GetStringSelection()
@@ -56,10 +61,20 @@ class App(wx.App):
                 dlg = wx.TextEntryDialog(None,"Type the city you would like to search for","City","Type City Here")
                 if dlg.ShowModal() == wx.ID_OK:
                     reponse = dlg.GetValue()
+                    for city in cities:
+                        if response.lower() == city.lower():
+                            print response
+                            return None
 
+                else:
+                    dlg.Desroy()
 
             else:
                 return None
+        else:
+            dlg.Destroy()
+            self.query()
+            return None
 
         dlg.Destroy()
         return True
