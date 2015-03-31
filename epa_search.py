@@ -53,19 +53,24 @@ class App(wx.App):
             dlg = wx.SingleChoiceDialog(None,'Select State', 'Query Construction',
                                     info)
             if dlg.ShowModal() == wx.ID_OK:
-                response = dlg.GetStringSelection()
-                sql = 'SELECT DISTINCT FAC_CITY FROM FRS_FAC WHERE FAC_STATE= :state'
-                cur.execute(sql, state=response)
+                state = dlg.GetStringSelection()
+                sql = 'SELECT DISTINCT FAC_CITY FROM FRS_FAC WHERE FAC_STATE=:state'
+                cur.execute(sql, state=state)
                 cities = cur.fetchall()
                 cities = ["%s" % x for x in cities]
+                print cities
                 dlg = wx.TextEntryDialog(None,"Type the city you would like to search for","City","Type City Here")
                 if dlg.ShowModal() == wx.ID_OK:
-                    reponse = dlg.GetValue()
+                    response = dlg.GetValue()
                     for city in cities:
+                        print city
                         if response.lower() == city.lower():
-                            print response
+                            city = city.upper()
+                            state = state.upper()
+                            self.results(city,state)
+                            dlg.Destroy()
                             return None
-
+                        
                 else:
                     dlg.Desroy()
 
@@ -75,8 +80,20 @@ class App(wx.App):
             dlg.Destroy()
             self.query()
             return None
+        
+    def results(self,city,state):
+        print 'runnin'
+        sql = 'SELECT FAC_NAME, FAC_ZIP FROM FRS_FAC WHERE FAC_CITY=:c and FAC_STATE=:s'
+        cur.execute(sql, c=city, s=state)
+        res = cur.fetchall()
+        panel = wx.Panel(self, wx.ID_ANY)
+        self.list_ctrl = wx.ListCtrl(panel, size=(-1,100), style=wx.LC_REPORT | wx.BORDER_SUNKEN)
+        self.list_ctrl.InsertColumn(0, 'Facility Name')
+        self.list_ctrl.InsertColumn(1, 'Facility Zip')
 
-        dlg.Destroy()
+        btn1 = wx.Button(panel, label="OK")
+        btn2 = wx.Button(panel, label="Visualize!")            
+
         return True
 
 def main():
