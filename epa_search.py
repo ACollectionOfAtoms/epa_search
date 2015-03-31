@@ -1,7 +1,6 @@
 import cx_Oracle
 import wx
 
-
 con = cx_Oracle.connect('dah3227_project/Oradah3227@//net6.cs.utexas.edu:1521/orcl')
 cur = con.cursor()
 
@@ -58,12 +57,10 @@ class App(wx.App):
                 cur.execute(sql, state=state)
                 cities = cur.fetchall()
                 cities = ["%s" % x for x in cities]
-                print cities
                 dlg = wx.TextEntryDialog(None,"Type the city you would like to search for","City","Type City Here")
                 if dlg.ShowModal() == wx.ID_OK:
                     response = dlg.GetValue()
                     for city in cities:
-                        print city
                         if response.lower() == city.lower():
                             city = city.upper()
                             state = state.upper()
@@ -82,17 +79,37 @@ class App(wx.App):
             return None
         
     def results(self,city,state):
-        print 'runnin'
-        sql = 'SELECT FAC_NAME, FAC_ZIP FROM FRS_FAC WHERE FAC_CITY=:c and FAC_STATE=:s'
+        #SQL Query
+        sql = 'SELECT i.fac_name, j.violations from frs_fac i, water j where i.registry_id = j.registry_id and i.fac_city =:c and i.fac_state =:s order by violations desc'
+
         cur.execute(sql, c=city, s=state)
         res = cur.fetchall()
-        panel = wx.Panel(self, wx.ID_ANY)
-        self.list_ctrl = wx.ListCtrl(panel, size=(-1,100), style=wx.LC_REPORT | wx.BORDER_SUNKEN)
-        self.list_ctrl.InsertColumn(0, 'Facility Name')
-        self.list_ctrl.InsertColumn(1, 'Facility Zip')
+
+        #Initialize frame!
+        top = wx.Frame(None, wx.ID_ANY, title='Results', size=(800,200))
+        top.index = 0
+        panel = wx.Panel(top, wx.ID_ANY)
+        top.list_ctrl = wx.ListCtrl(panel, size=(-1,100), style=wx.LC_REPORT | wx.BORDER_SUNKEN)
+        top.list_ctrl.InsertColumn(0, 'Facility Name')
+        top.list_ctrl.InsertColumn(1, 'Number Of Violations')
 
         btn1 = wx.Button(panel, label="OK")
-        btn2 = wx.Button(panel, label="Visualize!")            
+        btn2 = wx.Button(panel, label="Visualize!")
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(top.list_ctrl,0,wx.ALL|wx.EXPAND,5)
+        sizer.Add(btn1, 0, wx.ALL|wx.CENTER,5)
+        sizer.Add(btn2, 0, wx.ALL|wx.CENTER,8)
+        panel.SetSizer(sizer)
+
+        #populate table
+        for i in res:
+            top.list_ctrl.InsertStringItem(top.index,i[0])              
+            for j in range(1,len(i)):
+                top.list_ctrl.SetStringItem(top.index, j, str(i[j]))
+            top.index += 1
+        
+        top.Show()
 
         return True
 
