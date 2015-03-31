@@ -1,5 +1,6 @@
 import cx_Oracle
 import wx
+import csv
 
 con = cx_Oracle.connect('dah3227_project/Oradah3227@//net6.cs.utexas.edu:1521/orcl')
 cur = con.cursor()
@@ -22,7 +23,7 @@ class App(wx.App):
             return None
 
         if response == 'Construct A Query':
-            self.query()
+            self.query(None)
             return None
 
         elif response == 'Visualize Data':
@@ -34,7 +35,11 @@ class App(wx.App):
         return True
 
 
-    def query(self):
+    def query(self,event):
+        if event != None:
+            self.results(None,None)
+
+            
         dlg = wx.SingleChoiceDialog(None,'Select Scope', 'Query Construction',
                                     ['City Comparison', 'State Comparison'])
         if dlg.ShowModal() == wx.ID_OK:
@@ -58,6 +63,7 @@ class App(wx.App):
                 cities = cur.fetchall()
                 cities = ["%s" % x for x in cities]
                 dlg = wx.TextEntryDialog(None,"Type the city you would like to search for","City","Type City Here")
+                
                 if dlg.ShowModal() == wx.ID_OK:
                     response = dlg.GetValue()
                     for city in cities:
@@ -67,17 +73,17 @@ class App(wx.App):
                             self.results(city,state)
                             dlg.Destroy()
                             return None
-                        
-                else:
-                    dlg.Desroy()
 
+                        
             else:
                 return None
         else:
             dlg.Destroy()
-            self.query()
+            self.query(None)
             return None
+        return False
         
+
     def results(self,city,state):
         #SQL Query
         sql = 'SELECT i.fac_name, j.violations from frs_fac i, water j where i.registry_id = j.registry_id and i.fac_city =:c and i.fac_state =:s order by violations desc'
@@ -96,6 +102,10 @@ class App(wx.App):
         btn1 = wx.Button(panel, label="OK")
         btn2 = wx.Button(panel, label="Visualize!")
 
+        btn1.Bind(wx.EVT_BUTTON, self.query)
+
+        btn2.Bind(wx.EVT_BUTTON, csvgen(res))
+        
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(top.list_ctrl,0,wx.ALL|wx.EXPAND,5)
         sizer.Add(btn1, 0, wx.ALL|wx.CENTER,5)
@@ -106,16 +116,26 @@ class App(wx.App):
         for i in res:
             top.list_ctrl.InsertStringItem(top.index,i[0])              
             for j in range(1,len(i)):
+                #print i[0] , str(i[j])
                 top.list_ctrl.SetStringItem(top.index, j, str(i[j]))
             top.index += 1
         
         top.Show()
+    
 
-        return True
+def csvgen(res):
+    f = open('results.csv', 'wb')
+    csvwriter = csv.writer(f)
+    for i in res:
+        for j in range(1,len(i)):
+            row = [i[0] ,str(i[j])]
+            csvwriter.writerow(row)
+    f.close()
 
 def main():
     app = App(False, "output")
     app.MainLoop()
+
 main()
 cur.close()
 con.close()
