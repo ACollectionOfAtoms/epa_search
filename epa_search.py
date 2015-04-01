@@ -1,56 +1,33 @@
 import cx_Oracle
 import wx
 import csv
+import rpy2.robjects as robjects
 
 con = cx_Oracle.connect('dah3227_project/Oradah3227@//net6.cs.utexas.edu:1521/orcl')
 cur = con.cursor()
 
 class App(wx.App):
 
+
     def __init__(self, redirect=True, filename=None):
         wx.App.__init__(self, redirect, filename)
-        self.main_m()
-
-    def main_m(self):
-        dlg = wx.SingleChoiceDialog(None,
-                'What would you like to do?', 'EPA Analyzer',
-               ['Construct A Query', 'Visualize Data'])
-
-        if dlg.ShowModal() == wx.ID_OK:
-            response = dlg.GetStringSelection()
-        else:
-            dlg.Destroy()
-            return None
-
-        if response == 'Construct A Query':
-            self.query(None)
-            return None
-
-        elif response == 'Visualize Data':
-            self.vis()
-            return None
-
-        dlg.Destroy()
-
-        return True
+        self.query(None)
 
 
     def query(self,event):
         if event != None:
             self.results(None,None)
 
-            
-        dlg = wx.SingleChoiceDialog(None,'Select Scope', 'Query Construction',
-                                    ['City Comparison', 'State Comparison'])
+        dlg = wx.SingleChoiceDialog(None,'Select Scope of Query', 'Public EPA Record Analysis',
+                                    ['City Wide Analysis', 'State Wide Analysis', 'Country Wide Analysis'])
         if dlg.ShowModal() == wx.ID_OK:
             response = dlg.GetStringSelection()
         else:
             dlg.Destroy()
-            self.main_m()
             return None
 
 
-        if response == 'City Comparison':
+        if response == 'City Wide Analysis':
             cur.execute('select distinct FAC_STATE from frs_fac order by fac_state')
             info = cur.fetchall()
             info = ["%s" % x for x in info]
@@ -73,12 +50,9 @@ class App(wx.App):
                             self.results(city,state)
                             dlg.Destroy()
                             return None
-
-                        
             else:
                 return None
         else:
-            dlg.Destroy()
             self.query(None)
             return None
         return False
@@ -89,48 +63,64 @@ class App(wx.App):
         sql = 'SELECT i.fac_name, j.violations from frs_fac i, water j where i.registry_id = j.registry_id and i.fac_city =:c and i.fac_state =:s order by violations desc'
 
         cur.execute(sql, c=city, s=state)
-        res = cur.fetchall()
+        self.res = cur.fetchall()
 
         #Initialize frame!
-        top = wx.Frame(None, wx.ID_ANY, title='Results', size=(800,200))
-        top.index = 0
-        panel = wx.Panel(top, wx.ID_ANY)
-        top.list_ctrl = wx.ListCtrl(panel, size=(-1,100), style=wx.LC_REPORT | wx.BORDER_SUNKEN)
-        top.list_ctrl.InsertColumn(0, 'Facility Name')
-        top.list_ctrl.InsertColumn(1, 'Number Of Violations')
+        self.top = wx.Frame(None, wx.ID_ANY, title='Results', size=(580,200))
+        self.top.index = 0
+        self.panel = wx.Panel(self.top, wx.ID_ANY)
+        self.top.list_ctrl = wx.ListCtrl(self.panel, size=(-1,100), style=wx.LC_REPORT | wx.BORDER_SUNKEN)
+        self.top.list_ctrl.InsertColumn(0, 'Facility Name')
+        self.top.list_ctrl.InsertColumn(1, 'Number Of Violations')
+        self.top.list_ctrl.SetColumnWidth(0,350)
+        self.top.list_ctrl.SetColumnWidth(1,150)
 
-        btn1 = wx.Button(panel, label="OK")
-        btn2 = wx.Button(panel, label="Visualize!")
 
-        btn1.Bind(wx.EVT_BUTTON, self.query)
+        btn1 = wx.Button(self.panel, label="OK")
+        btn2 = wx.Button(self.panel, label="Visualize!")
 
-        btn2.Bind(wx.EVT_BUTTON, csvgen(res))
+        btn1.Bind(wx.EVT_BUTTON, self.Close)
+        btn2.Bind(wx.EVT_BUTTON, self.graph)
         
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(top.list_ctrl,0,wx.ALL|wx.EXPAND,5)
+        sizer.Add(self.top.list_ctrl,0,wx.ALL|wx.EXPAND,5)
         sizer.Add(btn1, 0, wx.ALL|wx.CENTER,5)
         sizer.Add(btn2, 0, wx.ALL|wx.CENTER,8)
-        panel.SetSizer(sizer)
+        self.panel.SetSizer(sizer)
 
         #populate table
-        for i in res:
-            top.list_ctrl.InsertStringItem(top.index,i[0])              
+        for i in self.res:
+            self.top.list_ctrl.InsertStringItem(self.top.index,i[0])              
             for j in range(1,len(i)):
-                #print i[0] , str(i[j])
-                top.list_ctrl.SetStringItem(top.index, j, str(i[j]))
-            top.index += 1
+                self.top.list_ctrl.SetStringItem(self.top.index, j, str(i[j]))
+            self.top.index += 1
         
-        top.Show()
-    
+        self.top.Show()
 
-def csvgen(res):
-    f = open('results.csv', 'wb')
-    csvwriter = csv.writer(f)
-    for i in res:
-        for j in range(1,len(i)):
-            row = [i[0] ,str(i[j])]
-            csvwriter.writerow(row)
-    f.close()
+
+    def graph(self,event):
+        f = open('results.csv', 'wb')
+        csvwriter = csv.writer(f)
+        for i in self.res:
+            for j in range(1,len(i)):
+                row = [i[0] ,str(i[j])]
+                csvwriter.writerow(row)
+        f.close()
+
+
+        r = robjects.r
+        r('''
+                source('vis.r')
+        ''')
+        r_main = robjects.globalenv['main']
+        r_main()
+        return True
+
+
+    def Close(self,event):
+        self.top.Destroy()
+        self.panel.Destroy()
+        self.query(None)
 
 def main():
     app = App(False, "output")
