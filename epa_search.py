@@ -109,6 +109,8 @@ class App(wx.App):
                 self.results(None,state)
 
 
+        if response == 'Country Wide Analysis':
+            self.results(None,None)
 
     
         else:
@@ -116,8 +118,14 @@ class App(wx.App):
         return None
         
     def results(self,city,state):
+        if city == None and state == None:
+            self.country = True
+            sql = 'select fac_state, sum(total) as StateTotal from (select i.fac_state, (coalesce(j.violations, 0) + coalesce(k.violations, 0) + coalesce(l.violations, 0)) as total from frs_fac i full join h2o j on i.fac_name = j.fac_name and i.fac_street = j.fac_street and i.fac_city = j.city and i.fac_state = j.state_code full join aire k on i.fac_name = k.fac_name and i.fac_street = k.fac_street and i.fac_city = k.fac_city and i.fac_state = k.fac_state full join haz l on i.fac_name = l.fac_name and i.fac_street = l.fac_street and i.fac_city = l.fac_city and i.fac_state = l.fac_state order by total desc) group by fac_state order by statetotal desc'
+            cur.execute(sql)
+            self.country_res = cur.fetchall()
+
         #SQL Query, check if given a city
-        if city == None:
+        elif city == None:
             self.state = True
             sql = 'select fac_city, sum(total) as CityTotal from (select i.fac_city, (coalesce(j.violations, 0) + coalesce(k.violations, 0) + coalesce(l.violations, 0)) as total from frs_fac i full join h2o j on i.fac_name = j.fac_name and i.fac_street = j.fac_street and i.fac_city = j.city and i.fac_state = j.state_code full join aire k on i.fac_name = k.fac_name and i.fac_street = k.fac_street and i.fac_city = k.fac_city and i.fac_state = k.fac_state full join haz l on i.fac_name = l.fac_name and i.fac_street = l.fac_street and i.fac_city = l.fac_city and i.fac_state = l.fac_state where i.fac_state =:s order by total desc) group by fac_city order by citytotal desc'
             cur.execute(sql, s=state)
@@ -138,7 +146,11 @@ class App(wx.App):
 
         #Specify the panels' size, and titles
         self.top.list_ctrl = wx.ListCtrl(self.panel, size=(-1,100), style=wx.LC_REPORT | wx.BORDER_SUNKEN)
-        if city == None:
+        if city == None and state == None:
+            self.top.list_ctrl.InsertColumn(0, 'State')
+            self.top.list_ctrl.InsertColumn(1, 'Total Violations')
+
+        elif city == None:
             self.top.list_ctrl.InsertColumn(0, 'City')
             self.top.list_ctrl.InsertColumn(1, 'Total Violations')
 
@@ -164,7 +176,15 @@ class App(wx.App):
         self.sizer.Add(btn2, 0, wx.ALL|wx.CENTER,8)
         self.panel.SetSizer(self.sizer)
         #populate table
-        if city == None:
+        if city == None and state == None:
+            for i in self.country_res:
+                self.top.list_ctrl.InsertStringItem(self.top.index,i[0])              
+                for j in range(1,len(i)):
+                    self.top.list_ctrl.SetStringItem(self.top.index, j, str(i[j]))
+                self.top.index += 1
+
+
+        elif city == None:
             for i in self.state_res:
                 self.top.list_ctrl.InsertStringItem(self.top.index,i[0])              
                 for j in range(1,len(i)):
@@ -189,22 +209,39 @@ class App(wx.App):
         f = open('results.csv', 'wb')
 
         #Use CSV writer method to generate csv.
-        if self.state == True:
-                    csvwriter = csv.writer(f)
-                    for i in self.state_res:
-                        for j in range(1,len(i)):
-                            row = [i[0] ,str(i[j])]
-                            csvwriter.writerow(row)
-                    f.close()
-                    
-                    #R to generate graph from csv!
-                    r = robjects.r
-                    r('''
-                            source('state_vis.r')
-                    ''')
-                    r_graph = robjects.globalenv['graph']
-                    r_graph() 
-                    return None
+        if self.country == True:
+                csvwriter = csv.writer(f)
+                for i in self.country_res:
+                    for j in range(1,len(i)):
+                        row = [i[0] ,str(i[j])]
+                        csvwriter.writerow(row)
+                f.close()
+                
+                #R to generate graph from csv!
+                r = robjects.r
+                r('''
+                        source('country_vis.r')
+                ''')
+                r_graph = robjects.globalenv['graph']
+                r_graph() 
+                return None
+
+        elif self.state == True:
+                csvwriter = csv.writer(f)
+                for i in self.state_res:
+                    for j in range(1,len(i)):
+                        row = [i[0] ,str(i[j])]
+                        csvwriter.writerow(row)
+                f.close()
+                
+                #R to generate graph from csv!
+                r = robjects.r
+                r('''
+                        source('state_vis.r')
+                ''')
+                r_graph = robjects.globalenv['graph']
+                r_graph() 
+                return None
 
         else:
             csvwriter = csv.writer(f)
