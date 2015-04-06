@@ -17,7 +17,7 @@ Use these terminal commands to install the required Python modules:
 
 ### Installing wxPython:
 If on OSX it is recommended to use Homebrew (http://brew.sh/)
-and the following command:
+and the following commands:
 ```
        brew install wxmac
        brew install wxpython
@@ -27,8 +27,7 @@ http://www.wxpython.org/download.php
 
 
 ## Using the program:
-! -- Due to time-constraints, the program can only return results ONCE, and will then have to be restarted after the user has viewed the
-generated table, and graphs. -- !
+! -- Due to time-constraints, the program can only return results ONCE, and will then have to be exit after the user has viewed the table and generated a graph. -- !
 
 While in the folder which contains epa_search.py, simply enter:
 ```   
@@ -55,7 +54,7 @@ to begin using the program. The rest is intuitive! Take note that any graphs gen
 
 ![alt text](http://i.imgur.com/2VSV3Yr.png "The capital of Rhode Island")
 
-#### Finally we can inspect the facilities with the largest amount of cumulative EPA violations (These include violations of the Clean Air Act, Clean Water Act, and the Resource Conservation and Recovery Act!
+#### Finally we can inspect the facilities with the largest amount of cumulative EPA violations (These include violations of the Clean Air Act, Clean Water Act, and the Resource Conservation and Recovery Act)
 
 ![alt text](http://i.imgur.com/QhgMCpd.png "Energy Companies tend to be high on the list...")
 
