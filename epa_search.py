@@ -93,7 +93,7 @@ class App(wx.App):
         
     def results(self,city,state):
         #SQL Query
-        sql = 'select i.fac_name,(coalesce(j.violations, 0) + coalesce(k.violations, 0) + coalesce(l.violations, 0)) as total from frs_fac i full join h2o j on i.fac_name = j.fac_name and i.fac_street = j.fac_street and i.fac_city = j.city and i.fac_state = j.state_code full join aire k on i.fac_name = k.fac_name and i.fac_street = k.fac_street and i.fac_city = k.fac_city and i.fac_state = k.fac_state full join haz l on i.fac_name = l.fac_name and i.fac_street = l.fac_street and i.fac_city = l.fac_city and i.fac_state = l.fac_state where i.fac_city =:c and i.fac_state =:s order by total desc'
+        sql = 'select * from (select i.fac_name,(coalesce(j.violations, 0) + coalesce(k.violations, 0) + coalesce(l.violations, 0)) as total from frs_fac i full join h2o j on i.fac_name = j.fac_name and i.fac_street = j.fac_street and i.fac_city = j.city and i.fac_state = j.state_code full join aire k on i.fac_name = k.fac_name and i.fac_street = k.fac_street and i.fac_city = k.fac_city and i.fac_state = k.fac_state full join haz l on i.fac_name = l.fac_name and i.fac_street = l.fac_street and i.fac_city = l.fac_city and i.fac_state = l.fac_state where i.fac_city =:c and i.fac_state =:s order by total desc) where total > 0'
         cur.execute(sql, c=city, s=state)
         self.res = cur.fetchall()
 
