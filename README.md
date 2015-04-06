@@ -33,7 +33,7 @@ While in the folder which contains epa_search.py, simply enter:
 ```   
      python epa_search.py
 ```
-to begin using the program. The rest is intuitive! Take note that any graphs generated will be saved as .pdf's in the current directory!
+The rest is intuitive! Take note that any graphs generated will be saved as .pdf's in the current directory!
 
 
 ### An Example:
