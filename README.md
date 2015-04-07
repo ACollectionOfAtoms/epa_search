@@ -38,7 +38,7 @@ The rest is intuitive! Take note that any graphs generated will be saved as .pdf
 
 ### An Example:
 
-#### First we run the program!: 
+#### First we run the program: 
 
 ![alt text](http://i.imgur.com/WF0yAD0.png "Just type python epa_search.py in your terminal!")
 
@@ -46,30 +46,22 @@ The rest is intuitive! Take note that any graphs generated will be saved as .pdf
 
 ![alt text](http://i.imgur.com/IJYgofm.png "Lets inspect this city!")
 
-#### I'm going to go ahead and choose Rhode Island...:
+#### I'm going to go ahead and choose Rhode Island:
 
 ![alt text](http://i.imgur.com/GOqUBzQ.png "I've never been there myself...")
 
-#### Now we type the city name... The capital should do!
+#### Now we type the city name... The capital should do:
 
 ![alt text](http://i.imgur.com/2VSV3Yr.png "The capital of Rhode Island")
 
-#### Finally we can inspect the facilities with the largest amount of cumulative EPA violations (These include violations of the Clean Air Act, Clean Water Act, and the Resource Conservation and Recovery Act)
+#### Finally we can inspect the facilities with the largest amount of cumulative EPA violations (These include violations of the Clean Air Act, Clean Water Act, and the Resource Conservation and Recovery Act):
 
 ![alt text](http://i.imgur.com/QhgMCpd.png "Energy Companies tend to be high on the list...")
 
-#### After clicking the "Generate Graph button", we open the graph in terminal (because it's faster)
+#### After clicking the "Generate Graph button", we open the graph in terminal (because it's faster):
 
 ![alt text](http://i.imgur.com/tXPPKdt.png "The lovely terminal...")
 
 #### And voilá:
 
 ![alt text](http://i.imgur.com/EZq6XHB.png "A wonderful graph")
-
-
-
-
-
-
-
-
