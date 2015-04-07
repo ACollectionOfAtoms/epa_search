@@ -1,7 +1,7 @@
 # Facilitated Access to Public EPA Records
 This program should provide a broad overview of EPA violations occuring in the USA at the city, state, and nation wide level. 
 
-## The following are required:
+### The following are required:
   * Python 2.7.9 + 
     * cx_Oracle
     * wxPython
@@ -36,7 +36,7 @@ While in the folder which contains epa_search.py, simply enter:
 The rest is intuitive! Take note that any graphs generated will be saved as .pdf's in the current directory!
 
 
-### An Example:
+## An Example:
 
 #### First we run the program: 
 
