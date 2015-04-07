@@ -16,4 +16,3 @@ graph <- function() {
   p = ggplot(data=res, aes(x=V1, y=V2, fill=Percent)) + geom_bar(stat="identity") + coord_flip() + xlab('City') + ylab('Total Violations')
   ggsave(file="state_graph.pdf")
 }
-graph()
