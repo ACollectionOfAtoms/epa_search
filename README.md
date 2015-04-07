@@ -15,7 +15,7 @@ Use these terminal commands to install the required Python modules:
     pip install rpy2
 ```
 
-### Installing wxPython:
+#### Installing wxPython:
 If on OSX it is recommended to use Homebrew (http://brew.sh/)
 and the following commands:
 ```
