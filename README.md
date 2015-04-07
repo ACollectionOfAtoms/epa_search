@@ -62,6 +62,6 @@ The rest is intuitive! Take note that any graphs generated will be saved as .pdf
 
 ![alt text](http://i.imgur.com/tXPPKdt.png "The lovely terminal...")
 
-#### And voilá:
+#### And voilà:
 
 ![alt text](http://i.imgur.com/EZq6XHB.png "A wonderful graph")
