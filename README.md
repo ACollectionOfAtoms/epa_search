@@ -22,7 +22,7 @@ and the following commands:
        brew install wxmac
        brew install wxpython
 ```
-####Alternately:
+#####Alternately:
 http://www.wxpython.org/download.php
 
 
