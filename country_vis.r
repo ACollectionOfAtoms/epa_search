@@ -1,3 +1,10 @@
+list.of.packages <- c("ggplot2", "dplyr")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
+library(ggplot2)
+library(dplyr)
+
 graph <- function() {
   res = read.csv("results.csv", header=FALSE)
   res = mutate(res, Percent = 100*(V2/(sum(res$V2))))

@@ -13,7 +13,7 @@ graph <- function() {
     res = head(res,10)
   }
   
-  p = ggplot(data=res, aes(x=V1, y=V2, fill=Percent)) + geom_bar(stat="identity") + coord_flip() + xlab('City') + ylab('Total Violations')
-  ggsave(file="state_graph.pdf")
+  p = ggplot(data=res, aes(x=V1, y=V2, fill=Percent)) + geom_bar(stat="identity") + coord_flip() + xlab('Facility') + ylab('Number Of Violations')
+  ggsave(file="city_graph.pdf")
 }
 graph()

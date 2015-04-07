@@ -2,6 +2,7 @@ import cx_Oracle
 import wx
 import csv
 import rpy2.robjects as robjects
+import os
 
 con = cx_Oracle.connect('dah3227_project/Oradah3227@//net6.cs.utexas.edu:1521/orcl')
 cur = con.cursor()
@@ -12,6 +13,8 @@ class App(wx.App):
     def __init__(self, redirect=True, filename=None):
         #Initialize App
         wx.App.__init__(self, redirect, filename)
+        self.state = False
+        self.country = False
         self.query(None)
 
 
@@ -107,14 +110,17 @@ class App(wx.App):
                 dlg2.EndModal(dlg2.GetReturnCode())
                 dlg2.Destroy()
                 self.results(None,state)
+                return None
 
 
         if response == 'Country Wide Analysis':
             self.results(None,None)
+            return None
 
     
         else:
             self.query(None)
+            return None
         return None
         
     def results(self,city,state):
@@ -210,38 +216,40 @@ class App(wx.App):
 
         #Use CSV writer method to generate csv.
         if self.country == True:
-                csvwriter = csv.writer(f)
-                for i in self.country_res:
-                    for j in range(1,len(i)):
-                        row = [i[0] ,str(i[j])]
-                        csvwriter.writerow(row)
-                f.close()
-                
-                #R to generate graph from csv!
-                r = robjects.r
-                r('''
-                        source('country_vis.r')
-                ''')
-                r_graph = robjects.globalenv['graph']
-                r_graph() 
-                return None
+            csvwriter = csv.writer(f)
+            for i in self.country_res:
+                for j in range(1,len(i)):
+                    row = [i[0] ,str(i[j])]
+                    csvwriter.writerow(row)
+            f.close()
+            
+            #R to generate graph from csv!
+            r = robjects.r
+            r('''
+                    source('country_vis.r')
+            ''')
+            r_graph = robjects.globalenv['graph']
+            r_graph()
+            os.remove('./results.csv')
+            return None
 
         elif self.state == True:
-                csvwriter = csv.writer(f)
-                for i in self.state_res:
-                    for j in range(1,len(i)):
-                        row = [i[0] ,str(i[j])]
-                        csvwriter.writerow(row)
-                f.close()
-                
-                #R to generate graph from csv!
-                r = robjects.r
-                r('''
-                        source('state_vis.r')
-                ''')
-                r_graph = robjects.globalenv['graph']
-                r_graph() 
-                return None
+            csvwriter = csv.writer(f)
+            for i in self.state_res:
+                for j in range(1,len(i)):
+                    row = [i[0] ,str(i[j])]
+                    csvwriter.writerow(row)
+            f.close()
+            
+            #R to generate graph from csv!
+            r = robjects.r
+            r('''
+                    source('state_vis.r')
+            ''')
+            r_graph = robjects.globalenv['graph']
+            r_graph()
+            os.remove('./results.csv')
+            return None
 
         else:
             csvwriter = csv.writer(f)
@@ -254,10 +262,11 @@ class App(wx.App):
             #R to generate graph from csv!
             r = robjects.r
             r('''
-                    source('vis.r')
+                    source('city_vis.r')
             ''')
             r_graph = robjects.globalenv['graph']
-            r_graph() 
+            r_graph()
+            os.remove('./results.csv')
             return None
         
 
