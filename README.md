@@ -58,7 +58,7 @@ The rest is intuitive! Take note that any graphs generated will be saved as .pdf
 
 ![alt text](http://i.imgur.com/QhgMCpd.png "Energy Companies tend to be high on the list...")
 
-#### After clicking the "Generate Graph button", we open the graph in terminal (because it's faster):
+#### After generating the graph, we open it:
 
 ![alt text](http://i.imgur.com/tXPPKdt.png "The lovely terminal...")
 
