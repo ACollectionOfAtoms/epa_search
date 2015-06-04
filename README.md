@@ -19,8 +19,8 @@ Use these terminal commands to install the required Python modules:
 If on OSX it is recommended to use Homebrew (http://brew.sh/)
 and the following commands:
 ```
-       brew install wxmac
-       brew install wxpython
+    brew install wxmac
+    brew install wxpython
 ```
 #####Alternately:
 http://www.wxpython.org/download.php
