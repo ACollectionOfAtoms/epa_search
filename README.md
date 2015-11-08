@@ -1,6 +1,6 @@
 # Facilitated Access to Public EPA Records
 This program should provide a broad overview of EPA violations occuring in the USA at the city, state, and nation wide level. 
-## !-----------This projects server is no longer accesible! I plan to redo this as a webapp interfacing with EPA data directly ---------!
+## !-----------This projects' server is no longer accesible! I plan to redo this as a webapp interfacing with EPA data directly ---------!
 ### The following are required:
   * Python 2.7.9 + 
     * cx_Oracle
